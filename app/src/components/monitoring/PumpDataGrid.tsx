@@ -1,3 +1,5 @@
+import type { Pump } from "../AssetMonitoring";
+
 type OperationStatus = 'STABLE' | 'AT_RISK' | 'DEGRADED' | 'NOMINAL'
 
 type OperationData = {
@@ -8,6 +10,18 @@ type OperationData = {
   statusLabel?: string
   progress?: number
   subtitle?: string
+}
+
+function pumpStatusToOpStatus(pumpStatus: Pump["status"]): OperationStatus {
+  if (pumpStatus === "HEALTHY") return "STABLE";
+  if (pumpStatus === "WARNING") return "AT_RISK";
+  return "DEGRADED";
+}
+
+function tempToOpStatus(temp: number): OperationStatus {
+  if (temp >= 78) return "DEGRADED";
+  if (temp >= 72) return "AT_RISK";
+  return "STABLE";
 }
 
 // Stable = green, At Risk = yellow, Degraded = red, Nominal = blue
@@ -32,39 +46,12 @@ const PROGRESS_BAR_CLASSES: Record<OperationStatus, string> = {
   NOMINAL: 'bg-chevron-blue h-full rounded-full',
 }
 
-const operationalMetrics: OperationData[] = [
-  {
-    label: 'Temperature',
-    metric: '210°F',
-    icon: 'thermostat',
-    status: 'DEGRADED',
-    statusLabel: 'Degrading',
-    progress: 85,
-  },
-  {
-    label: 'Vibration',
-    metric: '4.2 mm/s',
-    icon: 'vibration',
-    status: 'STABLE',
-    statusLabel: 'Stable',
-    subtitle: 'Within nominal range',
-  },
-  {
-    label: 'Pressure',
-    metric: '120 PSI',
-    icon: 'speed',
-    status: 'NOMINAL',
-    statusLabel: 'Nominal',
-    progress: 60,
-  },
-  {
-    label: 'Flow Rate',
-    metric: '450 GPM',
-    icon: 'water_drop',
-    status: 'NOMINAL',
-    subtitle: 'Avg: 442 GPM',
-  },
-]
+const DEFAULT_OPERATIONAL_METRICS: OperationData[] = [
+  { label: 'Temperature', metric: '—°F', icon: 'thermostat', status: 'NOMINAL', statusLabel: 'Nominal', progress: 50 },
+  { label: 'Vibration', metric: '— mm/s', icon: 'vibration', status: 'NOMINAL', statusLabel: 'Stable', subtitle: 'Within nominal range' },
+  { label: 'Pressure', metric: '— PSI', icon: 'speed', status: 'NOMINAL', statusLabel: 'Nominal', progress: 50 },
+  { label: 'Flow Rate', metric: '— GPM', icon: 'water_drop', status: 'NOMINAL', subtitle: 'No data' },
+];
 
 type LifecycleData = {
   label: string
@@ -76,37 +63,94 @@ type LifecycleData = {
   valueSize?: 'normal' | 'xl'
 }
 
-const lifecycleMetrics: LifecycleData[] = [
-  {
-    label: 'Maintenance',
-    value: 'ACTIVE',
-    icon: 'build',
-    subtitle: 'Work order assigned',
-    highlight: true,
-  },
-  {
-    label: 'Rotation',
-    value: '1,750',
-    icon: 'rotate_right',
-    subtitle: 'Target: 1,800 RPM',
-  },
-  {
-    label: 'Op. Hours',
-    value: '12,450h',
-    icon: 'schedule',
-    subtitle: 'Next service: 15,000h',
-  },
-  {
-    label: 'Connectivity',
-    value: '98ms Latency',
-    icon: 'sensors',
-    subtitle: 'Signal Strength: Optimal',
-    subtitleSuccess: true,
-    valueSize: 'xl',
-  },
-]
+const DEFAULT_LIFECYCLE_METRICS: LifecycleData[] = [
+  { label: 'Maintenance', value: '—', icon: 'build', subtitle: 'No pump selected' },
+  { label: 'Rotation', value: '—', icon: 'rotate_right', subtitle: 'Target: 2,900 RPM' },
+  { label: 'Op. Hours', value: '—', icon: 'schedule', subtitle: 'Next service: —' },
+  { label: 'Connectivity', value: '98ms Latency', icon: 'sensors', subtitle: 'Signal Strength: Optimal', subtitleSuccess: true, valueSize: 'xl' },
+];
 
-export default function PumpDataGrid() {
+interface PumpDataGridProps {
+  pump?: Pump | null;
+}
+
+function buildOperationalMetrics(pump: Pump | null | undefined): OperationData[] {
+  if (!pump) return DEFAULT_OPERATIONAL_METRICS;
+  const temp = pump.temperature ?? 0;
+  const vibStatus = pumpStatusToOpStatus(pump.status);
+  const vibMmPerSec = (pump.vibration * 25.4).toFixed(1);
+  return [
+    {
+      label: 'Temperature',
+      metric: `${Number(temp).toFixed(2)}°F`,
+      icon: 'thermostat',
+      status: tempToOpStatus(temp),
+      statusLabel: temp >= 78 ? 'Degrading' : temp >= 72 ? 'Elevated' : 'Stable',
+      progress: Math.min(100, Math.round((temp / 100) * 100)),
+    },
+    {
+      label: 'Vibration',
+      metric: `${vibMmPerSec} mm/s`,
+      icon: 'vibration',
+      status: vibStatus,
+      statusLabel: pump.status === 'HEALTHY' ? 'Stable' : pump.status === 'WARNING' ? 'Elevated' : 'Degrading',
+      subtitle: pump.status === 'HEALTHY' ? 'Within nominal range' : 'Monitor for bearing wear',
+    },
+    {
+      label: 'Pressure',
+      metric: `${pump.pressure} PSI`,
+      icon: 'speed',
+      status: pump.status === 'HEALTHY' ? 'NOMINAL' : pumpStatusToOpStatus(pump.status),
+      statusLabel: pump.status === 'HEALTHY' ? 'Nominal' : 'Check',
+      progress: Math.min(100, Math.round((pump.pressure / 60) * 100)),
+    },
+    {
+      label: 'Flow Rate',
+      metric: `${pump.flowRate} GPM`,
+      icon: 'water_drop',
+      status: pump.status === 'HEALTHY' ? 'NOMINAL' : pumpStatusToOpStatus(pump.status),
+    },
+  ];
+}
+
+function buildLifecycleMetrics(pump: Pump | null | undefined): LifecycleData[] {
+  if (!pump) return DEFAULT_LIFECYCLE_METRICS;
+  const nextService = (pump.operationalHours ?? 0) + 500;
+  return [
+    {
+      label: 'Maintenance',
+      value: pump.requiresMaintenance ? 'ACTIVE' : 'CLEAR',
+      icon: 'build',
+      subtitle: pump.requiresMaintenance ? 'Work order assigned' : 'No work orders',
+      highlight: pump.requiresMaintenance,
+    },
+    {
+      label: 'Rotation',
+      value: String(pump.rpm ?? '—'),
+      icon: 'rotate_right',
+      subtitle: 'Target: 2,900 RPM',
+    },
+    {
+      label: 'Op. Hours',
+      value: `${(pump.operationalHours ?? 0).toLocaleString()}h`,
+      icon: 'schedule',
+      subtitle: `Next service: ${nextService.toLocaleString()}h`,
+    },
+    {
+      label: 'Connectivity',
+      value: '98ms Latency',
+      icon: 'sensors',
+      subtitle: 'Signal Strength: Optimal',
+      subtitleSuccess: true,
+      valueSize: 'xl',
+    },
+  ];
+}
+
+export default function PumpDataGrid({ pump }: PumpDataGridProps) {
+  const operationalMetrics = buildOperationalMetrics(pump);
+  const lifecycleMetrics = buildLifecycleMetrics(pump);
+
   return (
     <div className="p-[25px] md:p-[35px] mb-[100px] grid grid-cols-1 lg:grid-cols-2 gap-8">
       <div className="space-y-6">

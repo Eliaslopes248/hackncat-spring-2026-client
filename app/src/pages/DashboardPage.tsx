@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
-import CriticalAlert from "../components/CriticalAlert";
 import TopMetrics from "../components/TopMetrics";
-import AssetMonitoring, { type Pump } from "../components/AssetMonitoring";
+import AssetMonitoring, { type Pump, type Status } from "../components/AssetMonitoring";
 import AIEvents from "../components/AIEvents";
 import NavBar from "../components/ui/NavBar";
-
-type Status = 'healthy' | 'warning' | 'critical';
 
 type ApiPumpStatus = {
     'pump-id': string;
@@ -19,7 +16,15 @@ type ApiPumpStatus = {
     timestamp: number;
     health: number;
     'is-running': boolean;
+    status?: string;
 };
+
+const DEFAULT_DEMO_PUMPS: Pump[] = [
+    { id: 'demo-01', name: 'Pump 01', status: 'HEALTHY', pressure: 42, flowRate: 120, vibration: 0.8, temperature: 68, rpm: 2850, operationalHours: 1240, requiresMaintenance: false, loadPercent: 72, isRunning: true },
+    { id: 'demo-02', name: 'Pump 02', status: 'WARNING', pressure: 38, flowRate: 95, vibration: 1.2, temperature: 74, rpm: 2720, operationalHours: 2100, requiresMaintenance: false, loadPercent: 85, isRunning: true },
+    { id: 'demo-03', name: 'Pump 03', status: 'CRITICAL', pressure: 28, flowRate: 45, vibration: 2.1, temperature: 82, rpm: 2400, operationalHours: 3800, requiresMaintenance: true, loadPercent: 92, isRunning: true },
+    { id: 'demo-04', name: 'Pump 04', status: 'HEALTHY', pressure: 45, flowRate: 135, vibration: 0.5, temperature: 65, rpm: 2900, operationalHours: 890, requiresMaintenance: false, loadPercent: 68, isRunning: true },
+];
 
 export default function DashboardPage() {
     const [pumps, setPumps] = useState<Pump[]>([]);
@@ -27,9 +32,18 @@ export default function DashboardPage() {
 
     // Helper functions (same as AssetMonitoring)
     const getStatusFromHealth = (health: number, requiresMaintenance: boolean): Status => {
-        if (requiresMaintenance || health < 0.5) return 'critical';
-        if (health < 0.75) return 'warning';
-        return 'healthy';
+        if (requiresMaintenance || health < 0.5) return 'CRITICAL';
+        if (health < 0.75) return 'WARNING';
+        return 'HEALTHY';
+    };
+
+    const mapApiStatusToStatus = (apiStatus: string | undefined, health: number, requiresMaintenance: boolean): Status => {
+        const normalized = apiStatus?.toUpperCase();
+        if (normalized === 'HEALTHY') return 'HEALTHY';
+        if (normalized === 'DEGRADING') return 'WARNING';
+        if (normalized === 'WARNING') return 'WARNING';
+        if (normalized === 'CRITICAL') return 'CRITICAL';
+        return getStatusFromHealth(health, requiresMaintenance);
     };
 
     const barToPsi = (bar: number): number => bar * 14.5038;
@@ -37,6 +51,8 @@ export default function DashboardPage() {
     const estimateVibration = (rpm: number, loadPercent: number): number => {
         return (rpm / 10000) * loadPercent * (0.5 + Math.random() * 0.5);
     };
+
+    const cToF = (c: number): number => (c * 9) / 5 + 32;
 
     // Fetch pump data
     async function fetchPumps() {
@@ -65,16 +81,18 @@ export default function DashboardPage() {
                     const pump: Pump = {
                         id: statusData['pump-id'],
                         name: `Pump ${String(index + 1).padStart(2, '0')}`,
-                        status: getStatusFromHealth(statusData.health, statusData['requires-maintenance']),
+                        status: mapApiStatusToStatus((statusData as any).status, statusData.health, statusData['requires-maintenance']),
                         pressure: Math.round(barToPsi(statusData.pressure)),
                         flowRate: Math.round(cfmToGpm(statusData['flow-rate'])),
                         vibration: estimateVibration(statusData.rpm, statusData['load-percent']),
-                        temperature: statusData.temperature,
+                        temperature: cToF(statusData.temperature),
                         rpm: statusData.rpm,
                         operationalHours: statusData['operational-hours'],
                         requiresMaintenance: statusData['requires-maintenance'],
                         loadPercent: statusData['load-percent'],
                         isRunning: statusData['is-running'],
+                        health: statusData.health,
+                        timestamp: statusData.timestamp,
                     };
                     return pump;
                 } catch (err) {
@@ -84,8 +102,25 @@ export default function DashboardPage() {
             });
 
             const pumpStatuses = await Promise.all(pumpStatusPromises);
+
+            console.log('TEST:', pumpStatuses);
+
+            if (!pumpStatuses) {
+                setPumps(DEFAULT_DEMO_PUMPS);
+            }
+
             const validPumps = pumpStatuses.filter((p): p is Pump => p !== null);
-            setPumps(validPumps);
+
+            // replace with default demo data if API returns none
+            if (!validPumps || validPumps.length > 0) {
+                console.log("API DATA");
+                setPumps(validPumps);
+            } else {
+                console.log("TEST DATA");
+                setPumps(DEFAULT_DEMO_PUMPS);
+            }
+
+            
         } catch (err) {
             console.error("Failed to fetch pumps:", err);
             setPumps([]);
@@ -103,13 +138,13 @@ export default function DashboardPage() {
     // Calculate metrics from pump data
     const metrics = {
         totalPumps: pumps.length,
-        healthy: pumps.filter(p => p.status === 'healthy').length,
-        warning: pumps.filter(p => p.status === 'warning').length,
-        critical: pumps.filter(p => p.status === 'critical').length,
+        healthy: pumps.filter(p => p.status === 'HEALTHY').length,
+        warning: pumps.filter(p => p.status === 'WARNING').length,
+        critical: pumps.filter(p => p.status === 'CRITICAL').length,
         activeWorkOrders: pumps.filter(p => p.requiresMaintenance).length,
-        openIncidents: pumps.filter(p => p.status === 'critical').length,
+        openIncidents: pumps.filter(p => p.status === 'CRITICAL').length,
         avgTemp: pumps.length > 0 
-            ? Math.round(pumps.reduce((sum, p) => sum + (p.temperature || 0), 0) / pumps.length)
+            ? Number((pumps.reduce((sum, p) => sum + (p.temperature || 0), 0) / pumps.length).toFixed(2))
             : 0,
     };
 
@@ -117,7 +152,7 @@ export default function DashboardPage() {
         <div className="main">
             <NavBar/>
 
-            <CriticalAlert></CriticalAlert>
+            {/* <CriticalAlert></CriticalAlert> */}
             
             {/* Dynamic TopMetrics with calculated values */}
             <TopMetrics
