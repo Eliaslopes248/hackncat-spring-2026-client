@@ -53,19 +53,7 @@ export default function NavBar() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
-          <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-right">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">Signed in as</p>
-            <p className="text-sm font-bold text-slate-700">{username ?? "Admin"}</p>
-          </div>
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="rounded-full border border-chevronRed/15 bg-chevronRed/[0.06] px-4 py-2 text-sm font-bold text-chevronRed transition hover:border-chevronRed/30 hover:bg-chevronRed/[0.1]"
-          >
-            Log Out
-          </button>
-        </div>
+    
 
         <button
           type="button"
@@ -113,17 +101,7 @@ export default function NavBar() {
                 {option.name}
               </NavLink>
             ))}
-            <div className="border-t border-slate-200 pt-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">Signed in as</p>
-              <p className="mt-1 text-sm font-bold text-slate-700">{username ?? "Admin"}</p>
-              <button
-                type="button"
-                onClick={handleSignOut}
-                className="mt-4 w-full rounded-full border border-chevronRed/15 bg-chevronRed/[0.06] px-4 py-3 text-sm font-bold text-chevronRed transition hover:border-chevronRed/30 hover:bg-chevronRed/[0.1]"
-              >
-                Log Out
-              </button>
-            </div>
+            
           </div>
         </div>
       </div>
