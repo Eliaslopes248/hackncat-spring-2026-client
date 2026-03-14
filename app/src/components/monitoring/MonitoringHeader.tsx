@@ -1,4 +1,38 @@
+import React from "react";
+
 export default function MonitoringHeader() {
+
+  async function getPumpReport() : Promise<string>{
+    return "test.txt";
+  } 
+
+  async function handleDownloadReport(
+    e : React.MouseEvent<HTMLButtonElement>) 
+  {
+    
+    try {
+      e.preventDefault();
+      const report: string = await getPumpReport();
+
+      const blob = new Blob([report], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "Report.txt";
+
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("[ERROR] ", error);
+    }
+
+  }
+
+
   return (
     <div className="p-[25px] md:p-[35px] flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
@@ -13,7 +47,7 @@ export default function MonitoringHeader() {
             </div>
           </div>
           <div className="flex gap-3 flex-col md:flex-row">
-            <button className="max-w-[350px] hover:bg-black duration-[.2s] hover:text-white min-w-fit inline-flex items-center justify-center px-4 py-2 border border-slate-200 rounded text-slate-600 text-xs font-black uppercase transition-colors">
+            <button onClick={handleDownloadReport} className="max-w-[350px] hover:bg-black duration-[.2s] hover:text-white min-w-fit inline-flex items-center justify-center px-4 py-2 border border-slate-200 rounded text-slate-600 text-xs font-black uppercase transition-colors">
               <span className="material-symbols-outlined text-sm mr-2 duration-[.2s]">download</span>
               Download Report
             </button>
