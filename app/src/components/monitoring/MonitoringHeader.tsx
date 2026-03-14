@@ -1,12 +1,4 @@
-import React from 'react'
-
-type pumpObject = {
-    pumpId:string,
-    pumpName:string,
-    pumpStatus:string
-};
-
-export default function MonitoringHeader({pump} :pumpObject | any) {
+export default function MonitoringHeader() {
   return (
     <div className="p-[25px] md:p-[35px] flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>

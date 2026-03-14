@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function AiInsightsPanel() {
   return (
     <div className="p-[25px] md:p-[35px] grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">

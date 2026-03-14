@@ -3,11 +3,7 @@ import MonitoringHeader from '../components/monitoring/MonitoringHeader';
 import AiInsightsPanel from '../components/monitoring/AiInsightsPanel';
 import PumpDataGrid from '../components/monitoring/PumpDataGrid';
 
-// type for a pump object
-type pumpObject = {};
-
-// pass a pumpObject as props
-export default function MonitoringPage({pump}: pumpObject | any) {
+export default function MonitoringPage() {
   return (
     <div className="min-h-screen flex flex-col">
         <div className="min-h-screen flex flex-col">
