@@ -1,11 +1,11 @@
-const DEFAULT_BASE_URL =
-  "https://ncat-hackathon-spring2026-odumf8kir-geocube101s-projects.vercel.app/api"
+import type { Pump } from "../components/AssetMonitoring"; // adjust path
+const DEFAULT_BASE_URL = "https://iotaspheresystems.com/api"
+console.log("API Base URL:", DEFAULT_BASE_URL)
+
 
 export type RequestOptions = Omit<RequestInit, "body" | "method"> & {
   headers?: HeadersInit
 }
-
-export type ConnectPayload = Record<string, unknown>
 
 export class ApiClientError extends Error {
   status: number
@@ -20,7 +20,7 @@ export class ApiClientError extends Error {
 }
 
 export function createApiClient(baseUrl = DEFAULT_BASE_URL) {
-  async function parseResponse<T>(response: Response): Promise<T> {
+  async function parseResponse(response: Response) {
     const contentType = response.headers.get("content-type") ?? ""
     const data = contentType.includes("application/json")
       ? await response.json()
@@ -37,14 +37,10 @@ export function createApiClient(baseUrl = DEFAULT_BASE_URL) {
       throw new ApiClientError(message, response.status, data)
     }
 
-    return data as T
+    return data
   }
 
-  async function post<TResponse, TBody = unknown>(
-    path: string,
-    body: TBody,
-    options: RequestOptions = {},
-  ): Promise<TResponse> {
+  async function post(path: string, body: unknown = {}, options: RequestOptions = {}) {
     const response = await fetch(`${baseUrl}${path}`, {
       method: "POST",
       headers: {
@@ -55,14 +51,31 @@ export function createApiClient(baseUrl = DEFAULT_BASE_URL) {
       body: JSON.stringify(body),
     })
 
-    return parseResponse<TResponse>(response)
+    return parseResponse(response)
+  }
+
+  async function getPumps(){
+    return post("/pumps")
+  }
+
+  async function getPumpStatus(pumpId: string): Promise<Pump[]>  {
+    return post("/pumps-status", { "pump-id": pumpId }) as Promise<Pump[]>
+  }
+
+  async function getAllPumpStatus(pumps: string[]) {
+    const pumpStatusList = []
+    for (const pumpId of pumps) {
+      const status = await post(`/pump-status`, { "pump-id": pumpId })
+      pumpStatusList.push(status)
+    }
+    return pumpStatusList
   }
 
   return {
     post,
-    connect<TResponse = unknown>(payload: ConnectPayload, options?: RequestOptions) {
-      return post<TResponse, ConnectPayload>("/connect", payload, options)
-    },
+    getPumps,
+    getPumpStatus,
+    getAllPumpStatus,
   }
 }
 
