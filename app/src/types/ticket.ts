@@ -17,8 +17,8 @@ export type Ticket = {
 /** Default seed tickets (no pump_id or placeholder). Shown until replaced by pump-driven tickets. */
 export const DEFAULT_TICKET_LIST: Ticket[] = [
   {
-    id: 'default-1',
-    pump_id: 'demo-03',
+    id: 'default-5',
+    pump_id: 'demo-033',
     ticketNumber: 'TK-8842',
     title: 'Pump 03 - Critical',
     description: 'Temperature exceeding safe thresholds. High vibration detected in seal housing. Automatic shutdown triggered.',

@@ -8,19 +8,30 @@ function getPriorityLabel(severity: Ticket['severity_level']): string {
 }
 
 export default function TicketBannerData() {
-  const { tickets, removeTicket } = useTickets()
+  const { tickets, loading, error, removeTicket } = useTickets()
 
   const criticalTickets = tickets.filter((t) => t.severity_level === 'critical')
   const warningTickets = tickets.filter(
     (t) => t.severity_level === 'warning' || t.severity_level === 'degrading'
   )
 
-  const totalOpen = tickets.length
-  const criticalCount = criticalTickets.length
-  const warningCount = warningTickets.length
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="flex flex-col items-center gap-3">
+          <span className="w-6 h-6 rounded-full border-2 border-chevronRed border-t-transparent animate-spin" />
+          <p className="text-xs text-slate-400 uppercase tracking-widest font-bold">Loading Tickets</p>
+        </div>
+      </div>
+    )
+  }
 
-  const handleMarkComplete = (id: string) => {
-    removeTicket(id)
+  if (error) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <p className="text-sm text-chevronRed font-semibold">Failed to load tickets: {error}</p>
+      </div>
+    )
   }
 
   return (
@@ -29,15 +40,15 @@ export default function TicketBannerData() {
       <div className="flex items-center justify-center gap-6" data-purpose="top-metrics">
         <div className="p-3 flex-1 border-b-2 border-chevron-blue bg-white shadow-sm">
           <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Total Open</p>
-          <p className="text-2xl font-bold text-slate-800">{totalOpen}</p>
+          <p className="text-2xl font-bold text-slate-800">{tickets.length}</p>
         </div>
         <div className="p-3 flex-1 border-b-2 border-chevronRed bg-white shadow-sm">
           <p className="text-[10px] text-chevronRed font-bold uppercase mb-1">Critical</p>
-          <p className="text-2xl font-bold text-chevronRed">{criticalCount}</p>
+          <p className="text-2xl font-bold text-chevronRed">{criticalTickets.length}</p>
         </div>
         <div className="p-3 border-b-2 flex-1 border-amber-500 bg-white shadow-sm">
           <p className="text-[10px] text-amber-500 font-bold uppercase mb-1">Warning</p>
-          <p className="text-2xl font-bold text-amber-500">{warningCount}</p>
+          <p className="text-2xl font-bold text-amber-500">{warningTickets.length}</p>
         </div>
       </div>
 
@@ -49,7 +60,7 @@ export default function TicketBannerData() {
             Critical Tickets
           </h2>
           <span className="text-[10px] font-bold bg-red-100 px-3 py-1 rounded-full text-chevronRed">
-            {criticalCount} ACTIONS REQUIRED
+            {criticalTickets.length} ACTIONS REQUIRED
           </span>
         </div>
         <div className="space-y-4">
@@ -58,10 +69,10 @@ export default function TicketBannerData() {
               key={ticket.id}
               ticket={ticket}
               variant="critical"
-              onMarkComplete={() => handleMarkComplete(ticket.id)}
+              onMarkComplete={() => removeTicket(ticket.id)}
             />
           ))}
-          {criticalCount === 0 && (
+          {criticalTickets.length === 0 && (
             <p className="text-sm text-slate-500 italic py-4">No critical tickets open.</p>
           )}
         </div>
@@ -75,7 +86,7 @@ export default function TicketBannerData() {
             Warning Tickets
           </h2>
           <span className="text-[10px] font-bold bg-amber-50 px-3 py-1 rounded-full text-amber-600">
-            {warningCount} PENDING REVIEW
+            {warningTickets.length} PENDING REVIEW
           </span>
         </div>
         <div className="space-y-4">
@@ -84,10 +95,10 @@ export default function TicketBannerData() {
               key={ticket.id}
               ticket={ticket}
               variant="warning"
-              onMarkComplete={() => handleMarkComplete(ticket.id)}
+              onMarkComplete={() => removeTicket(ticket.id)}
             />
           ))}
-          {warningCount === 0 && (
+          {warningTickets.length === 0 && (
             <p className="text-sm text-slate-500 italic py-4">No warning tickets open.</p>
           )}
         </div>
@@ -112,18 +123,13 @@ function TicketCard({
     : 'w-full bg-slate-800 text-white py-3 rounded-custom text-xs font-black uppercase tracking-widest hover:bg-slate-900 transition-all'
 
   return (
-    <div
-      className={`ticket-card bg-white ${borderClass} shadow-md border-y border-r border-slate-200 p-6 rounded-r-custom`}
-    >
+    <div className={`ticket-card bg-white ${borderClass} shadow-md border-y border-r border-slate-200 p-6 rounded-r-custom`}>
       <div className="flex justify-between items-start mb-3">
         <span className="text-xs font-bold text-slate-400 tracking-wider">#{ticket.ticketNumber}</span>
-        <span
-          className={
-            isCritical
-              ? 'bg-red-100 text-chevronRed text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-tighter'
-              : 'bg-amber-100 text-amber-600 text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-tighter'
-          }
-        >
+        <span className={isCritical
+          ? 'bg-red-100 text-chevronRed text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-tighter'
+          : 'bg-amber-100 text-amber-600 text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-tighter'
+        }>
           {getPriorityLabel(ticket.severity_level)}
         </span>
       </div>
@@ -134,10 +140,7 @@ function TicketCard({
           {ticket.tags && ticket.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4 md:mb-0">
               {ticket.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-[10px] bg-slate-100 text-slate-600 px-2 py-1 rounded font-semibold uppercase"
-                >
+                <span key={tag} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-1 rounded font-semibold uppercase">
                   {tag}
                 </span>
               ))}

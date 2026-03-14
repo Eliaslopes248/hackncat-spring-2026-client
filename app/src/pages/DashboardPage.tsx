@@ -96,6 +96,8 @@ export default function DashboardPage() {
                         health: statusData.health,
                         timestamp: statusData.timestamp,
                     };
+
+                    console.log(`Fetched status for pump ${pumpId}:`, pump);
                     return pump;
                 } catch (err) {
                     console.error(`Error fetching status for pump ${pumpId}:`, err);

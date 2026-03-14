@@ -1,10 +1,12 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { Pump } from '../components/AssetMonitoring'
 import type { Ticket, TicketSeverity } from '../types/ticket'
-import { DEFAULT_TICKET_LIST } from '../types/ticket'
+import { createTicket, deleteTicket, getOpenTickets } from '../service/ticket.ts'
 
 type TicketContextValue = {
   tickets: Ticket[]
+  loading: boolean
+  error: string | null
   addTicketIfNotExists: (pump: Pump) => void
   removeTicket: (id: string) => void
   getTicketByPumpId: (pumpId: string) => Ticket | undefined
@@ -42,15 +44,42 @@ function buildDescription(pump: Pump): string {
 }
 
 export function TicketProvider({ children }: { children: React.ReactNode }) {
-  const [tickets, setTickets] = useState<Ticket[]>(() => [...DEFAULT_TICKET_LIST])
+  const [tickets, setTickets] = useState<Ticket[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const addTicketIfNotExists = useCallback((pump: Pump) => {
-    if (pump.status === 'HEALTHY') return
-    setTickets((prev) => {
-      const exists = prev.some((t) => t.pump_id === pump.id)
-      if (exists) return prev
+  // Fetch tickets from Supabase on mount — no DEFAULT_TICKET_LIST
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+
+    getOpenTickets()
+      .then((data) => {
+        if (!cancelled) setTickets(data)
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err?.message ?? 'Failed to load tickets')
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const addTicketIfNotExists = useCallback(
+    async (pump: Pump) => {
+      if (pump.status === 'HEALTHY') return
+
+      // Guard against duplicates using current local state
+      const exists = tickets.some((t) => t.pump_id === pump.id)
+      if (exists) return
+
       const severity = pumpStatusToSeverity(pump.status)
-      const ticket: Ticket = {
+      const newTicket: Ticket = {
         id: `ticket-${pump.id}`,
         pump_id: pump.id,
         ticketNumber: nextTicketNumber(),
@@ -59,12 +88,24 @@ export function TicketProvider({ children }: { children: React.ReactNode }) {
         severity_level: severity,
         tags: pump.requiresMaintenance ? ['Maintenance'] : [],
       }
-      return [...prev, ticket]
-    })
-  }, [])
 
-  const removeTicket = useCallback((id: string) => {
-    setTickets((prev) => prev.filter((t) => t.id !== id))
+      try {
+        const saved = await createTicket(newTicket)
+        setTickets((prev) => [...prev, saved])
+      } catch (err: any) {
+        console.error('Failed to create ticket:', err?.message)
+      }
+    },
+    [tickets]
+  )
+
+  const removeTicket = useCallback(async (id: string) => {
+    try {
+      await deleteTicket(id)
+      setTickets((prev) => prev.filter((t) => t.id !== id))
+    } catch (err: any) {
+      console.error('Failed to delete ticket:', err?.message)
+    }
   }, [])
 
   const getTicketByPumpId = useCallback(
@@ -80,12 +121,14 @@ export function TicketProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<TicketContextValue>(
     () => ({
       tickets,
+      loading,
+      error,
       addTicketIfNotExists,
       removeTicket,
       getTicketByPumpId,
       hasTicketForPump,
     }),
-    [tickets, addTicketIfNotExists, removeTicket, getTicketByPumpId, hasTicketForPump]
+    [tickets, loading, error, addTicketIfNotExists, removeTicket, getTicketByPumpId, hasTicketForPump]
   )
 
   return <TicketContext.Provider value={value}>{children}</TicketContext.Provider>
