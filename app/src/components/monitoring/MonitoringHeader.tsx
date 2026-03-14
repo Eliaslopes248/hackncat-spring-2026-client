@@ -1,11 +1,6 @@
 import React from "react";
 
 export default function MonitoringHeader() {
-
-  async function getPumpReport() : Promise<string>{
-    return "test.txt";
-  } 
-
   async function handleDownloadReport(
     e : React.MouseEvent<HTMLButtonElement>) 
   {
