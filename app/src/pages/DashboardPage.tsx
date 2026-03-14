@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import CriticalAlert from "../components/CriticalAlert";
 import TopMetrics from "../components/TopMetrics";
-import AssetMonitoring, { type Pump } from "../components/AssetMonitoring";
+import AssetMonitoring, { type Pump, type Status } from "../components/AssetMonitoring";
 import AIEvents from "../components/AIEvents";
-
-type Status = 'healthy' | 'warning' | 'critical';
+import NavBar from "../components/ui/NavBar";
+import { useTickets } from "../context/TicketContext";
 
 type ApiPumpStatus = {
     'pump-id': string;
@@ -18,17 +17,35 @@ type ApiPumpStatus = {
     timestamp: number;
     health: number;
     'is-running': boolean;
+    status?: string;
 };
+
+const DEFAULT_DEMO_PUMPS: Pump[] = [
+    { id: 'demo-01', name: 'Pump 01', status: 'HEALTHY', pressure: 42, flowRate: 120, vibration: 0.8, temperature: 68, rpm: 2850, operationalHours: 1240, requiresMaintenance: false, loadPercent: 72, isRunning: true },
+    { id: 'demo-02', name: 'Pump 02', status: 'WARNING', pressure: 38, flowRate: 95, vibration: 1.2, temperature: 74, rpm: 2720, operationalHours: 2100, requiresMaintenance: false, loadPercent: 85, isRunning: true },
+    { id: 'demo-03', name: 'Pump 03', status: 'CRITICAL', pressure: 28, flowRate: 45, vibration: 2.1, temperature: 82, rpm: 2400, operationalHours: 3800, requiresMaintenance: true, loadPercent: 92, isRunning: true },
+    { id: 'demo-04', name: 'Pump 04', status: 'HEALTHY', pressure: 45, flowRate: 135, vibration: 0.5, temperature: 65, rpm: 2900, operationalHours: 890, requiresMaintenance: false, loadPercent: 68, isRunning: true },
+];
 
 export default function DashboardPage() {
     const [pumps, setPumps] = useState<Pump[]>([]);
     const [loading, setLoading] = useState(true);
+    const { addTicketIfNotExists } = useTickets();
 
     // Helper functions (same as AssetMonitoring)
     const getStatusFromHealth = (health: number, requiresMaintenance: boolean): Status => {
-        if (requiresMaintenance || health < 0.5) return 'critical';
-        if (health < 0.75) return 'warning';
-        return 'healthy';
+        if (requiresMaintenance || health < 0.5) return 'CRITICAL';
+        if (health < 0.75) return 'WARNING';
+        return 'HEALTHY';
+    };
+
+    const mapApiStatusToStatus = (apiStatus: string | undefined, health: number, requiresMaintenance: boolean): Status => {
+        const normalized = apiStatus?.toUpperCase();
+        if (normalized === 'HEALTHY') return 'HEALTHY';
+        if (normalized === 'DEGRADING') return 'WARNING';
+        if (normalized === 'WARNING') return 'WARNING';
+        if (normalized === 'CRITICAL') return 'CRITICAL';
+        return getStatusFromHealth(health, requiresMaintenance);
     };
 
     const barToPsi = (bar: number): number => bar * 14.5038;
@@ -36,6 +53,8 @@ export default function DashboardPage() {
     const estimateVibration = (rpm: number, loadPercent: number): number => {
         return (rpm / 10000) * loadPercent * (0.5 + Math.random() * 0.5);
     };
+
+    const cToF = (c: number): number => (c * 9) / 5 + 32;
 
     // Fetch pump data
     async function fetchPumps() {
@@ -64,16 +83,18 @@ export default function DashboardPage() {
                     const pump: Pump = {
                         id: statusData['pump-id'],
                         name: `Pump ${String(index + 1).padStart(2, '0')}`,
-                        status: getStatusFromHealth(statusData.health, statusData['requires-maintenance']),
+                        status: mapApiStatusToStatus((statusData as any).status, statusData.health, statusData['requires-maintenance']),
                         pressure: Math.round(barToPsi(statusData.pressure)),
                         flowRate: Math.round(cfmToGpm(statusData['flow-rate'])),
                         vibration: estimateVibration(statusData.rpm, statusData['load-percent']),
-                        temperature: statusData.temperature,
+                        temperature: cToF(statusData.temperature),
                         rpm: statusData.rpm,
                         operationalHours: statusData['operational-hours'],
                         requiresMaintenance: statusData['requires-maintenance'],
                         loadPercent: statusData['load-percent'],
                         isRunning: statusData['is-running'],
+                        health: statusData.health,
+                        timestamp: statusData.timestamp,
                     };
                     return pump;
                 } catch (err) {
@@ -84,7 +105,15 @@ export default function DashboardPage() {
 
             const pumpStatuses = await Promise.all(pumpStatusPromises);
             const validPumps = pumpStatuses.filter((p): p is Pump => p !== null);
-            setPumps(validPumps);
+
+            // replace with default demo data if API returns none
+            if (validPumps.length > 0) {
+                setPumps(validPumps);
+            } else {
+                setPumps(DEFAULT_DEMO_PUMPS);
+            }
+
+            
         } catch (err) {
             console.error("Failed to fetch pumps:", err);
             setPumps([]);
@@ -99,44 +128,30 @@ export default function DashboardPage() {
         return () => clearInterval(interval);
     }, []);
 
+    // Create a ticket for each pump that is critical, warning, or degrading (only if one doesn't exist for that pump_id).
+    useEffect(() => {
+        pumps.forEach((pump) => {
+            if (pump.status !== 'HEALTHY') addTicketIfNotExists(pump);
+        });
+    }, [pumps, addTicketIfNotExists]);
+
     // Calculate metrics from pump data
     const metrics = {
         totalPumps: pumps.length,
-        healthy: pumps.filter(p => p.status === 'healthy').length,
-        warning: pumps.filter(p => p.status === 'warning').length,
-        critical: pumps.filter(p => p.status === 'critical').length,
+        healthy: pumps.filter(p => p.status === 'HEALTHY').length,
+        warning: pumps.filter(p => p.status === 'WARNING').length,
+        critical: pumps.filter(p => p.status === 'CRITICAL').length,
         activeWorkOrders: pumps.filter(p => p.requiresMaintenance).length,
-        openIncidents: pumps.filter(p => p.status === 'critical').length,
+        openIncidents: pumps.filter(p => p.status === 'CRITICAL').length,
         avgTemp: pumps.length > 0 
-            ? Math.round(pumps.reduce((sum, p) => sum + (p.temperature || 0), 0) / pumps.length)
+            ? Number((pumps.reduce((sum, p) => sum + (p.temperature || 0), 0) / pumps.length).toFixed(2))
             : 0,
     };
 
     return (
         <div className="main">
-            <header className="bg-white border-b border-border py-3 px-6 flex justify-between items-center sticky top-0 z-50">
-                <div className="flex items-center gap-4" data-purpose="branding-container">
-                    <div className="w-8 h-8 flex items-center justify-center bg-white overflow-hidden">
-                        <img alt="Chevron Logo" className="object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALAHm-2b9DiLW4fG9hIFfBUsDS_Pf78WZACC-24YaFM9EQzmoPJnzo96KJUZzPEHK-UtNzhgz7HPqLELRycqgdkufu5-kQ_ZUW_N0Qc3Ft7RQLQVyO1IkVbS9eFzx9I7P3Htx-4KXVY7DHEe1721pLB4IFBSPnrvSPs-FoEHz_1Z4vAYyAJDHb5zqUYibZN7Z791gp363IbA6d0nDpBKc5Z5IBXZqvClp74KEbJMAdGlHP7cFcETh-STEij5R96AzYkBEYvyhkipQ"/>
-                    </div>
-                    <div>
-                        <h1 className="text-lg font-bold tracking-tight text-chevronBlue">Chevron Digital Oilfield</h1>
-                        <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Monitoring &amp; Operations Control</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-4" data-purpose="user-controls">
-                    <div className="hidden md:flex items-center gap-2 text-xs font-medium text-slate-600">
-                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                        System Online
-                    </div>
-                    <div className="w-8 h-8 rounded-full bg-chevronBlue flex items-center justify-center text-white text-xs font-bold">
-                        JD
-                    </div>
-                </div>
-            </header>
+            <NavBar/>
 
-            <CriticalAlert></CriticalAlert>
-            
             {/* Dynamic TopMetrics with calculated values */}
             <TopMetrics
                 totalPumps={metrics.totalPumps}
@@ -155,7 +170,7 @@ export default function DashboardPage() {
 
             <footer className="p-6 bg-slate-50 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
                 <div className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-medium">
-                    © 2023 Chevron Digital Asset Management • Secure SCADA Gateway 4.0
+                    © 2026 Chevron Digital Asset Management • Secure SCADA Gateway 4.0
                 </div>
                 <div className="flex gap-6">
                     <span className="text-[10px] text-slate-400 uppercase font-bold hover:text-chevronBlue cursor-pointer">Support</span>

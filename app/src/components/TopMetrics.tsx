@@ -21,7 +21,7 @@ export default function TopMetrics({
 
   return (
     <div>
-      <section className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3" data-purpose="top-metrics">
+      <section className="mt-[2vh] px-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3" data-purpose="top-metrics">
         <div className="bg-white p-3 rounded-custom border border-border shadow-sm">
           <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Total Pumps</p>
           <p className="text-xl font-bold text-slate-800">{totalPumps}</p>
