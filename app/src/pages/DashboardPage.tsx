@@ -3,6 +3,7 @@ import TopMetrics from "../components/TopMetrics";
 import AssetMonitoring, { type Pump, type Status } from "../components/AssetMonitoring";
 import AIEvents from "../components/AIEvents";
 import NavBar from "../components/ui/NavBar";
+import { useTickets } from "../context/TicketContext";
 
 type ApiPumpStatus = {
     'pump-id': string;
@@ -29,6 +30,7 @@ const DEFAULT_DEMO_PUMPS: Pump[] = [
 export default function DashboardPage() {
     const [pumps, setPumps] = useState<Pump[]>([]);
     const [loading, setLoading] = useState(true);
+    const { addTicketIfNotExists } = useTickets();
 
     // Helper functions (same as AssetMonitoring)
     const getStatusFromHealth = (health: number, requiresMaintenance: boolean): Status => {
@@ -102,21 +104,12 @@ export default function DashboardPage() {
             });
 
             const pumpStatuses = await Promise.all(pumpStatusPromises);
-
-            console.log('TEST:', pumpStatuses);
-
-            if (!pumpStatuses) {
-                setPumps(DEFAULT_DEMO_PUMPS);
-            }
-
             const validPumps = pumpStatuses.filter((p): p is Pump => p !== null);
 
             // replace with default demo data if API returns none
-            if (!validPumps || validPumps.length > 0) {
-                console.log("API DATA");
+            if (validPumps.length > 0) {
                 setPumps(validPumps);
             } else {
-                console.log("TEST DATA");
                 setPumps(DEFAULT_DEMO_PUMPS);
             }
 
@@ -135,6 +128,13 @@ export default function DashboardPage() {
         return () => clearInterval(interval);
     }, []);
 
+    // Create a ticket for each pump that is critical, warning, or degrading (only if one doesn't exist for that pump_id).
+    useEffect(() => {
+        pumps.forEach((pump) => {
+            if (pump.status !== 'HEALTHY') addTicketIfNotExists(pump);
+        });
+    }, [pumps, addTicketIfNotExists]);
+
     // Calculate metrics from pump data
     const metrics = {
         totalPumps: pumps.length,
@@ -152,8 +152,6 @@ export default function DashboardPage() {
         <div className="main">
             <NavBar/>
 
-            {/* <CriticalAlert></CriticalAlert> */}
-            
             {/* Dynamic TopMetrics with calculated values */}
             <TopMetrics
                 totalPumps={metrics.totalPumps}

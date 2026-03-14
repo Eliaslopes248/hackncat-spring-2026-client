@@ -4,16 +4,19 @@ import MonitoringHeader from '../components/monitoring/MonitoringHeader';
 import AiInsightsPanel from '../components/monitoring/AiInsightsPanel';
 import PumpDataGrid from '../components/monitoring/PumpDataGrid';
 import type { Pump } from '../components/AssetMonitoring';
+import { useTickets } from '../context/TicketContext';
 
 export default function MonitoringPage() {
     const { state } = useLocation();
     const pump = (state as { pump?: Pump } | null)?.pump ?? null;
+    const { getTicketByPumpId } = useTickets();
+    const ticketForPump = pump ? getTicketByPumpId(pump.id) : undefined;
 
     return (
     <div className="min-h-screen flex flex-col">
         <div className="min-h-screen flex flex-col">
             <NavBar/>
-            <MonitoringHeader pump={pump}/>
+            <MonitoringHeader pump={pump} ticket={ticketForPump}/>
             <AiInsightsPanel pump={pump}/>
             <PumpDataGrid pump={pump}/>
             <footer className="p-6 bg-slate-50 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">

@@ -1,11 +1,14 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import type { Pump } from "../AssetMonitoring";
+import type { Ticket } from "../../types/ticket";
 
 interface MonitoringHeaderProps {
   pump?: Pump | null;
+  ticket?: Ticket | null;
 }
 
-export default function MonitoringHeader({ pump }: MonitoringHeaderProps) {
+export default function MonitoringHeader({ pump, ticket }: MonitoringHeaderProps) {
   const displayName = pump?.name ?? "No pump selected";
   const statusLabel = pump?.status === "HEALTHY" ? "HEALTHY" : pump?.status === "WARNING" ? "WARNING" : pump?.status === "CRITICAL" ? "CRITICAL" : "—";
   const statusClass = pump?.status === "HEALTHY" ? "bg-green-400" : pump?.status === "WARNING" ? "bg-amber-400" : pump?.status === "CRITICAL" ? "bg-chevron-red" : "bg-slate-200";
@@ -33,9 +36,17 @@ export default function MonitoringHeader({ pump }: MonitoringHeaderProps) {
               <span className="material-symbols-outlined text-sm">chevron_right</span>
               <span className="text-chevron-blue">{displayName}</span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-wrap">
               <h1 className="text-slate-900 text-3xl font-black">{displayName}</h1>
-              {/* <span className="bg-chevron-red text-white text-[10px] px-2 py-0.5 rounded font-black uppercase tracking-wider">Critical Alert</span> */}
+              {ticket && (
+                <Link
+                  to="/tickets"
+                  className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-800 text-[10px] font-bold px-3 py-1.5 rounded uppercase tracking-wider hover:bg-amber-200 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-sm">confirmation_number</span>
+                  Ticket filed #{ticket.ticketNumber}
+                </Link>
+              )}
             </div>
           </div>
           <div className="flex gap-3 flex-col md:flex-row">
