@@ -1,7 +1,6 @@
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import LOGO from "../../../logo2.png";
-import { useAuth } from "../../context/AuthContext";
 
 type NavOption = {
   name: string;
@@ -14,15 +13,7 @@ const navOptions: NavOption[] = [
 ];
 
 export default function NavBar() {
-  const navigate = useNavigate();
-  const { signOut, username } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-
-  function handleSignOut() {
-    signOut();
-    setMobileMenuOpen(false);
-    navigate("/login", { replace: true });
-  }
 
   return (
     <div className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
