@@ -12,10 +12,15 @@ export default function MonitoringPage() {
             <MonitoringHeader/>
             <AiInsightsPanel/>
             <PumpDataGrid/>
-            <footer className="border-t border-slate-100 py-6 px-6 text-center">
-                <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">
-                    Pipe .NET
-                </p>
+            <footer className="p-6 bg-slate-50 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-medium">
+                    © 2026 Chevron Digital Asset Management • Secure SCADA Gateway 4.0
+                </div>
+                <div className="flex gap-6">
+                    <span className="text-[10px] text-slate-400 uppercase font-bold hover:text-chevronBlue cursor-pointer">Support</span>
+                    <span className="text-[10px] text-slate-400 uppercase font-bold hover:text-chevronBlue cursor-pointer">Logs</span>
+                    <span className="text-[10px] text-slate-400 uppercase font-bold hover:text-chevronBlue cursor-pointer">Security</span>
+                </div>
             </footer>
         </div>
 
