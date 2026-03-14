@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Chevron Digital Oilfield Monitoring</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              chevronBlue: '#0050AA',
+              chevronRed: '#E21836',
+              surface: '#FFFFFF',
+              border: '#E2E8F0',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            borderRadius: {
+              'custom': '4px',
+            }
+          }
+        }
+      }
+    </script>
+    <style type="text/tailwindcss">
+      :root {
+        --primary-color: #0050AA;
+        --accent-color: #E21836;
+      }
+      body {
+        background-color: #F8FAFC;
+        color: #1E293B;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .high-density-table th, .high-density-table td {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen flex flex-col">
+
+    <!---------navbar start---------->
+    <header class="bg-white border-b border-border py-3 px-6 flex justify-between items-center sticky top-0 z-50">
+      <div class="flex items-center gap-4" data-purpose="branding-container">
+        <div class="w-8 h-8 flex items-center justify-center bg-white overflow-hidden">
+          <img alt="Chevron Logo" class="object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALAHm-2b9DiLW4fG9hIFfBUsDS_Pf78WZACC-24YaFM9EQzmoPJnzo96KJUZzPEHK-UtNzhgz7HPqLELRycqgdkufu5-kQ_ZUW_N0Qc3Ft7RQLQVyO1IkVbS9eFzx9I7P3Htx-4KXVY7DHEe1721pLB4IFBSPnrvSPs-FoEHz_1Z4vAYyAJDHb5zqUYibZN7Z791gp363IbA6d0nDpBKc5Z5IBXZqvClp74KEbJMAdGlHP7cFcETh-STEij5R96AzYkBEYvyhkipQ"/>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight text-chevronBlue">Chevron Digital Oilfield</h1>
+          <p class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Monitoring &amp; Operations Control</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4" data-purpose="user-controls">
+        <div class="hidden md:flex items-center gap-2 text-xs font-medium text-slate-600">
+          <span class="w-2 h-2 rounded-full bg-green-500"></span>
+          System Online
+        </div>
+        <div class="w-8 h-8 rounded-full bg-chevronBlue flex items-center justify-center text-white text-xs font-bold">
+          JD
+        </div>
+      </div>
+    </header>
+    <!---------navbar end------------->
+
+    <!---------critical-alert start---------->
+    <section class="px-6 pt-4">
+      <div class="bg-red-50 border border-chevronRed/20 p-3 rounded-custom flex items-center justify-between" data-purpose="critical-alert">
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-chevronRed">warning</span>
+          <span class="font-bold text-chevronRed uppercase tracking-wide text-xs md:text-sm">
+            CRITICAL: Pump 07 at Hack Island is overheating. AI Workflow initiated.
+          </span>
+        </div>
+        <button class="bg-chevronRed text-white text-[10px] font-bold py-1.5 px-4 rounded-custom hover:opacity-90 transition-opacity uppercase">
+          RESPOND
+        </button>
+      </div>
+    </section>
+    <!---------critical-alert end------------->
+
+    <main class="p-6 space-y-6 flex-grow">
+
+      <!---------top-metrics start---------->
+      <section class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3" data-purpose="top-metrics">
+        <div class="bg-white p-3 rounded-custom border border-border shadow-sm">
+          <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Total Pumps</p>
+          <p class="text-xl font-bold text-slate-800">24</p>
+        </div>
+        <div class="bg-white p-3 rounded-custom border border-border shadow-sm">
+          <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Healthy</p>
+          <div class="flex items-baseline gap-2">
+            <p class="text-xl font-bold text-green-600">21</p>
+            <span class="text-[10px] text-slate-400">87%</span>
+          </div>
+        </div>
+        <div class="bg-white p-3 rounded-custom border border-border shadow-sm">
+          <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Warning</p>
+          <p class="text-xl font-bold text-amber-500">2</p>
+        </div>
+        <div class="bg-white p-3 rounded-custom border-l-4 border-l-chevronRed border-y border-r border-border shadow-sm">
+          <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Critical</p>
+          <p class="text-xl font-bold text-chevronRed">1</p>
+        </div>
+        <div class="bg-white p-3 rounded-custom border border-border shadow-sm">
+          <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Open Incidents</p>
+          <p class="text-xl font-bold text-slate-800">3</p>
+        </div>
+        <div class="bg-white p-3 rounded-custom border border-border shadow-sm">
+          <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Active Work Orders</p>
+          <p class="text-xl font-bold text-slate-800">2</p>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-custom border border-chevronBlue/10 shadow-sm">
+          <p class="text-[10px] text-chevronBlue font-bold uppercase mb-1">Avg Temp</p>
+          <p class="text-xl font-bold text-chevronBlue">104°F</p>
+        </div>
+      </section>
+      <!---------top-metrics end------------->
+
+      <!---------asset-monitoring start---------->
+      <section class="space-y-3">
+        <div class="flex justify-between items-center">
+          <h2 class="text-sm font-bold text-slate-800 uppercase tracking-tight flex items-center gap-2">
+            Asset Monitoring: Active Pumps
+            <span class="bg-slate-100 text-slate-500 text-[10px] px-2 py-0.5 rounded-full">LIVE</span>
+          </h2>
+          <span class="text-[11px] font-bold text-chevronBlue cursor-pointer hover:underline uppercase">View All Assets</span>
+        </div>
+        <!---------asset-table (desktop) start---------->
+        <div class="hidden lg:block bg-white border border-border rounded-custom shadow-sm overflow-hidden">
+          <table class="w-full text-left high-density-table border-collapse">
+            <thead class="bg-slate-50 border-b border-border">
+              <tr>
+                <th class="text-[10px] font-bold text-slate-500 uppercase">Asset Name <span class="material-symbols-outlined text-[12px] align-middle">unfold_more</span></th>
+                <th class="text-[10px] font-bold text-slate-500 uppercase text-center">Status</th>
+                <th class="text-[10px] font-bold text-slate-500 uppercase">Pressure</th>
+                <th class="text-[10px] font-bold text-slate-500 uppercase">Flow Rate</th>
+                <th class="text-[10px] font-bold text-slate-500 uppercase">Vibration</th>
+                <th class="text-[10px] font-bold text-slate-500 uppercase text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="font-bold text-slate-700">Pump 01</td>
+                <td class="text-center"><span class="inline-block w-2 h-2 rounded-full bg-green-500" title="Healthy"></span></td>
+                <td class="text-slate-600">142 PSI</td>
+                <td class="text-slate-600">82 GPM</td>
+                <td class="text-slate-600">0.08 in/s</td>
+                <td class="text-right">
+                  <button class="text-chevronBlue font-bold text-[11px] uppercase hover:underline">Details</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="font-bold text-slate-700">Pump 02</td>
+                <td class="text-center"><span class="inline-block w-2 h-2 rounded-full bg-green-500" title="Healthy"></span></td>
+                <td class="text-slate-600">138 PSI</td>
+                <td class="text-slate-600">79 GPM</td>
+                <td class="text-slate-600">0.10 in/s</td>
+                <td class="text-right">
+                  <button class="text-chevronBlue font-bold text-[11px] uppercase hover:underline">Details</button>
+                </td>
+              </tr>
+              <tr class="bg-amber-50/30 hover:bg-amber-50 transition-colors">
+                <td class="font-bold text-slate-700">Pump 03</td>
+                <td class="text-center"><span class="inline-block w-2 h-2 rounded-full bg-amber-500" title="Warning"></span></td>
+                <td class="font-semibold text-amber-600">155 PSI</td>
+                <td class="text-slate-600">72 GPM</td>
+                <td class="font-semibold text-amber-600">0.24 in/s</td>
+                <td class="text-right">
+                  <button class="text-amber-600 font-bold text-[11px] uppercase hover:underline">Inspect</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="font-bold text-slate-700">Pump 04</td>
+                <td class="text-center"><span class="inline-block w-2 h-2 rounded-full bg-green-500" title="Healthy"></span></td>
+                <td class="text-slate-600">140 PSI</td>
+                <td class="text-slate-600">81 GPM</td>
+                <td class="text-slate-600">0.09 in/s</td>
+                <td class="text-right">
+                  <button class="text-chevronBlue font-bold text-[11px] uppercase hover:underline">Details</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="font-bold text-slate-700">Pump 05</td>
+                <td class="text-center"><span class="inline-block w-2 h-2 rounded-full bg-green-500" title="Healthy"></span></td>
+                <td class="text-slate-600">141 PSI</td>
+                <td class="text-slate-600">80 GPM</td>
+                <td class="text-slate-600">0.07 in/s</td>
+                <td class="text-right">
+                  <button class="text-chevronBlue font-bold text-[11px] uppercase hover:underline">Details</button>
+                </td>
+              </tr>
+              <tr class="bg-red-50 hover:bg-red-100 transition-colors">
+                <td class="font-bold text-chevronRed">Pump 07</td>
+                <td class="text-center"><span class="inline-block w-2 h-2 rounded-full bg-chevronRed" title="Critical"></span></td>
+                <td class="font-bold text-chevronRed">182 PSI</td>
+                <td class="font-bold text-chevronRed">42 GPM</td>
+                <td class="font-bold text-chevronRed">0.92 in/s</td>
+                <td class="text-right">
+                  <button class="bg-chevronRed text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase">Emergency</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!---------asset-table (desktop) end------------->
+        <!---------asset-cards (mobile) start---------->
+        <div class="lg:hidden space-y-2 max-h-[400px] overflow-y-auto pr-1">
+          <div class="bg-red-50 border border-chevronRed/30 p-3 rounded-custom shadow-sm">
+            <div class="flex justify-between items-center mb-2">
+              <span class="font-bold text-chevronRed text-sm">Pump 07</span>
+              <span class="text-[10px] font-bold bg-chevronRed text-white px-2 py-0.5 rounded-full">CRITICAL</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-[11px]">
+              <div><p class="text-slate-500">Press.</p><p class="font-bold text-chevronRed">182 PSI</p></div>
+              <div><p class="text-slate-500">Flow</p><p class="font-bold text-chevronRed">42 GPM</p></div>
+              <div><p class="text-slate-500">Vibr.</p><p class="font-bold text-chevronRed">0.92 in/s</p></div>
+            </div>
+          </div>
+          <div class="bg-amber-50 border border-amber-200 p-3 rounded-custom shadow-sm">
+            <div class="flex justify-between items-center mb-2">
+              <span class="font-bold text-slate-800 text-sm">Pump 03</span>
+              <span class="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">WARNING</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-[11px]">
+              <div><p class="text-slate-500">Press.</p><p class="font-bold text-amber-600">155 PSI</p></div>
+              <div><p class="text-slate-500">Flow</p><p class="font-bold">72 GPM</p></div>
+              <div><p class="text-slate-500">Vibr.</p><p class="font-bold text-amber-600">0.24 in/s</p></div>
+            </div>
+          </div>
+          <div class="bg-white border border-border p-3 rounded-custom shadow-sm opacity-80">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-bold text-slate-800 text-sm">Pump 01</span>
+              <span class="text-[10px] font-bold text-green-600">HEALTHY</span>
+            </div>
+            <div class="flex gap-4 text-[10px] text-slate-500">
+              <span>142 PSI</span> • <span>82 GPM</span> • <span>0.08 in/s</span>
+            </div>
+          </div>
+          <div class="bg-white border border-border p-3 rounded-custom shadow-sm opacity-80">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-bold text-slate-800 text-sm">Pump 02</span>
+              <span class="text-[10px] font-bold text-green-600">HEALTHY</span>
+            </div>
+            <div class="flex gap-4 text-[10px] text-slate-500">
+              <span>138 PSI</span> • <span>79 GPM</span> • <span>0.10 in/s</span>
+            </div>
+          </div>
+        </div>
+        <!---------asset-cards (mobile) end------------->
+      </section>
+      <!---------asset-monitoring end------------->
+
+      <!---------recent-ai-events start---------->
+      <section class="bg-white border border-border rounded-custom p-4 shadow-sm">
+        <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">history</span>
+          Recent AI Events
+        </h3>
+        <div class="space-y-2.5">
+          <div class="flex items-start gap-3 text-[12px] leading-relaxed">
+            <span class="text-chevronRed font-mono font-bold whitespace-nowrap">[14:32:01]</span>
+            <span class="text-slate-600"><span class="font-semibold text-slate-800">Anomaly detected:</span> Pump 07 High-Temp (212°F). AI Supervisor auto-adjusting flow valve V-102.</span>
+          </div>
+          <div class="flex items-start gap-3 text-[12px] leading-relaxed">
+            <span class="text-chevronBlue font-mono font-bold whitespace-nowrap">[14:32:15]</span>
+            <span class="text-slate-600">Work order #8842 generated for onsite maintenance at Hack Island.</span>
+          </div>
+          <div class="flex items-start gap-3 text-[12px] leading-relaxed">
+            <span class="text-green-600 font-mono font-bold whitespace-nowrap">[14:15:00]</span>
+            <span class="text-slate-600">Daily diagnostic report completed. 23/24 assets responsive.</span>
+          </div>
+        </div>
+      </section>
+      <!---------recent-ai-events end------------->
+
+    </main>
+
+    <!---------footer start---------->
+    <footer class="p-6 bg-slate-50 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-medium">
+        © 2023 Chevron Digital Asset Management • Secure SCADA Gateway 4.0
+      </div>
+      <div class="flex gap-6">
+        <span class="text-[10px] text-slate-400 uppercase font-bold hover:text-chevronBlue cursor-pointer">Support</span>
+        <span class="text-[10px] text-slate-400 uppercase font-bold hover:text-chevronBlue cursor-pointer">Logs</span>
+        <span class="text-[10px] text-slate-400 uppercase font-bold hover:text-chevronBlue cursor-pointer">Security</span>
+      </div>
+    </footer>
+    <!---------footer end------------->
+
+  </body>
+</html>

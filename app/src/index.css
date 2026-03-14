@@ -1,1 +1,129 @@
+
+
+/*
+  Base styles from mockups (dashboard, maintenance, monitoring).
+  Use in React: Tailwind classes (e.g. bg-chevronBlue, text-chevronRed, rounded-custom,
+  border-border) + custom classes (.material-symbols-outlined, .ticket-card, .metric-card,
+  .section-header, .high-density-table, .critical-border, .primary-border).
+  CSS variables: var(--primary-color), var(--accent-color), var(--background-page), etc.
+*/
+
+/* ---------------------------------------------------------------------------
+   Fonts (Google Fonts – load once for the app)
+   --------------------------------------------------------------------------- */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap");
 @import "tailwindcss";
+/* ---------------------------------------------------------------------------
+   Theme – design tokens (Tailwind v4 @theme)
+   Use: bg-chevronBlue, text-chevronRed, font-sans, rounded-custom, etc.
+   --------------------------------------------------------------------------- */
+@theme {
+  /* Chevron brand colors (dashboard + maintenance + monitoring) */
+  --color-chevronBlue: #0050aa;
+  --color-chevronRed: #e21836;
+  --color-chevron-blue: #0050aa;
+  --color-chevron-red: #e21836;
+  /* Surface & border (dashboard/maintenance) */
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  /* Typography */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-lato: "Lato", ui-sans-serif, system-ui, sans-serif;
+  /* Radius */
+  --radius-custom: 4px;
+}
+
+/* ---------------------------------------------------------------------------
+   Root variables – for raw CSS or non-Tailwind usage
+   --------------------------------------------------------------------------- */
+:root {
+  --primary-color: #0050aa;
+  --accent-color: #e21836;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --background-page: #f8fafc;
+  --text-primary: #1e293b;
+  --text-muted: #64748b;
+}
+
+/* ---------------------------------------------------------------------------
+   Base styles
+   --------------------------------------------------------------------------- */
+body {
+  background-color: var(--background-page);
+  color: var(--text-primary);
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------------------------------------------------------------------------
+   Material Symbols Outlined – icon font (use class .material-symbols-outlined)
+   --------------------------------------------------------------------------- */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: 400;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-rendering: optimizeLegibility;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+/* ---------------------------------------------------------------------------
+   Table – high-density (dashboard asset table)
+   --------------------------------------------------------------------------- */
+.high-density-table th,
+.high-density-table td {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Ticket card – maintenance page (press feedback)
+   --------------------------------------------------------------------------- */
+.ticket-card {
+  transition: transform 0.1s ease-in-out;
+}
+.ticket-card:active {
+  transform: scale(0.99);
+}
+
+/* ---------------------------------------------------------------------------
+   Section header – sticky section titles (maintenance)
+   --------------------------------------------------------------------------- */
+.section-header {
+  position: sticky;
+  top: 64px;
+  z-index: 40;
+  background-color: var(--background-page);
+}
+
+/* ---------------------------------------------------------------------------
+   Metric card – monitoring page (tile with shadow/hover)
+   --------------------------------------------------------------------------- */
+.metric-card {
+  background-color: var(--surface);
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition: box-shadow 0.15s ease;
+}
+.metric-card:hover {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* ---------------------------------------------------------------------------
+   Border accents – left border for status/cards
+   --------------------------------------------------------------------------- */
+.critical-border {
+  border-left: 4px solid var(--accent-color);
+}
+.primary-border {
+  border-left: 4px solid var(--primary-color);
+}

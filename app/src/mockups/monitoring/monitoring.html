@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Chevron Monitoring - Streamlined Overview</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "chevron-blue": "#0050AA",
+              "chevron-red": "#E21836",
+              "background": "#FFFFFF",
+              "surface": "#F8FAFC",
+            },
+            fontFamily: {
+              "sans": ["Lato", "sans-serif"]
+            },
+          },
+        }
+      }
+    </script>
+    <style type="text/tailwindcss">
+      @layer base {
+        body {
+          @apply bg-white text-slate-800 antialiased;
+        }
+      }
+      .metric-card {
+        @apply bg-white border border-slate-200 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow;
+      }
+      .critical-border {
+        border-left: 4px solid #E21836;
+      }
+      .primary-border {
+        border-left: 4px solid #0050AA;
+      }
+    </style>
+  </head>
+  <body class="font-sans">
+    <div class="min-h-screen flex flex-col">
+
+      <!---------navbar start---------->
+      <header class="border-b border-slate-200 bg-white sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="bg-chevron-blue p-1.5 rounded">
+              <span class="material-symbols-outlined text-white text-2xl">precision_manufacturing</span>
+            </div>
+            <h2 class="text-chevron-blue text-xl font-black tracking-tight uppercase">Chevron Monitoring</h2>
+          </div>
+          <nav class="hidden md:flex items-center gap-8">
+            <a class="text-slate-500 hover:text-chevron-blue text-sm font-bold transition-colors" href="#">DASHBOARD</a>
+            <a class="text-chevron-blue text-sm font-black border-b-2 border-chevron-blue pb-1" href="#">ASSETS</a>
+            <a class="text-slate-500 hover:text-chevron-blue text-sm font-bold transition-colors" href="#">ALERTS</a>
+          </nav>
+          <div class="flex items-center gap-4">
+            <button class="text-slate-400 hover:text-chevron-blue transition-colors">
+              <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <div class="h-8 w-8 rounded-full border-2 border-chevron-blue bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCF8MV3Y05DE-p04sCbDnEYh6cRZSKzVkiKsC9nCV4IlIfdo2yr8AUYHBXG4ApAtjxbK9tFfa_hyHQQ6pFpPLRWG3aPAWZlcPhX4aTNnqaAyB0_qr55sdIaH8woSCmwK_LNswshMiEiGLrRHLbLjB-9odwABIp0VgtJG___vbk98OHw39UyyzDJ5q0TeLpqpND7K8klnflkpl8oPWS8CumM5U6LkZaqBgT9wEXBwiFXhVhVbVG2TZeqozk58DlTYS8Nap2M9gc6Awk");'></div>
+          </div>
+        </div>
+      </header>
+      <!---------navbar end------------->
+
+      <main class="flex-grow max-w-7xl mx-auto w-full px-6 py-8">
+
+        <!---------page-header (breadcrumb + title + actions) start---------->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div>
+            <div class="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">
+              <span>Assets</span>
+              <span class="material-symbols-outlined text-sm">chevron_right</span>
+              <span class="text-chevron-blue">Hack Island Pump 07</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <h1 class="text-slate-900 text-3xl font-black">Hack Island Pump 07</h1>
+              <span class="bg-chevron-red text-white text-[10px] px-2 py-0.5 rounded font-black uppercase tracking-wider">Critical Alert</span>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <button class="inline-flex items-center justify-center px-4 py-2 border border-slate-200 rounded text-slate-600 text-xs font-black uppercase hover:bg-slate-50 transition-colors">
+              <span class="material-symbols-outlined text-sm mr-2">download</span>
+              Download Report
+            </button>
+            <button class="inline-flex items-center justify-center px-4 py-2 bg-chevron-blue text-white rounded text-xs font-black uppercase hover:bg-opacity-90 transition-all shadow-sm">
+              <span class="material-symbols-outlined text-sm mr-2">settings</span>
+              Configure Asset
+            </button>
+          </div>
+        </div>
+        <!---------page-header end------------->
+
+        <!---------ai-insights-and-status start---------->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div class="lg:col-span-2 bg-slate-50 border border-chevron-blue/20 rounded-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 primary-border">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 text-chevron-blue mb-2">
+                <span class="material-symbols-outlined font-bold">psychology</span>
+                <span class="font-black text-sm uppercase tracking-wider">AI Insights</span>
+              </div>
+              <p class="text-slate-600 leading-relaxed font-medium">
+                Autonomous workflow detected overheating condition (210°F). Work order <span class="text-chevron-blue font-black">#8921</span> has been automatically triggered in the maintenance system to prevent bearing failure.
+              </p>
+            </div>
+            <button class="whitespace-nowrap bg-chevron-blue text-white px-6 py-3 rounded text-xs font-black uppercase hover:bg-opacity-90">
+              View Work Order
+            </button>
+          </div>
+          <div class="bg-white border border-chevron-red rounded-lg p-6 shadow-sm critical-border flex flex-col justify-center">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Global Status</span>
+              <span class="bg-chevron-red/10 text-chevron-red px-2 py-0.5 rounded text-[10px] font-black uppercase">Live</span>
+            </div>
+            <div class="text-chevron-red text-4xl font-black mb-1">FATAL</div>
+            <p class="text-slate-500 text-sm font-bold">Overheating detected</p>
+          </div>
+        </div>
+        <!---------ai-insights-and-status end------------->
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+          <!---------operational-metrics start---------->
+          <div class="space-y-6">
+            <h3 class="text-slate-400 text-xs font-black uppercase tracking-[0.2em] border-b border-slate-100 pb-2">Operational Metrics</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="metric-card">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="material-symbols-outlined text-chevron-red">thermostat</span>
+                  <span class="text-chevron-red text-[10px] font-black uppercase">Degrading</span>
+                </div>
+                <div class="text-slate-400 text-xs font-bold uppercase mb-1">Temperature</div>
+                <div class="text-3xl font-black text-slate-900">210°F</div>
+                <div class="w-full bg-slate-100 h-1.5 rounded-full mt-4">
+                  <div class="bg-chevron-red h-full w-[85%] rounded-full"></div>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="material-symbols-outlined text-chevron-blue">vibration</span>
+                  <span class="text-emerald-600 text-[10px] font-black uppercase">Stable</span>
+                </div>
+                <div class="text-slate-400 text-xs font-bold uppercase mb-1">Vibration</div>
+                <div class="text-3xl font-black text-slate-900">4.2 mm/s</div>
+                <p class="text-slate-400 text-[10px] mt-2 font-bold italic">Within nominal range</p>
+              </div>
+              <div class="metric-card">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="material-symbols-outlined text-chevron-blue">speed</span>
+                  <span class="text-chevron-blue text-[10px] font-black uppercase">Nominal</span>
+                </div>
+                <div class="text-slate-400 text-xs font-bold uppercase mb-1">Pressure</div>
+                <div class="text-3xl font-black text-slate-900">120 PSI</div>
+                <div class="w-full bg-slate-100 h-1.5 rounded-full mt-4">
+                  <div class="bg-chevron-blue h-full w-[60%] rounded-full"></div>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="material-symbols-outlined text-chevron-blue">water_drop</span>
+                </div>
+                <div class="text-slate-400 text-xs font-bold uppercase mb-1">Flow Rate</div>
+                <div class="text-3xl font-black text-slate-900">450 GPM</div>
+                <p class="text-slate-400 text-[10px] mt-2 font-bold">Avg: 442 GPM</p>
+              </div>
+            </div>
+            <!---------sensor-history-chart start---------->
+            <div class="bg-white border border-slate-200 rounded-lg p-6 shadow-sm">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-slate-900 font-black text-sm uppercase tracking-wider">24H Sensor History</h3>
+                <div class="flex gap-1">
+                  <button class="px-2 py-1 bg-slate-50 text-[10px] font-black text-slate-400 rounded">1H</button>
+                  <button class="px-2 py-1 bg-chevron-blue text-white text-[10px] font-black rounded">24H</button>
+                  <button class="px-2 py-1 bg-slate-50 text-[10px] font-black text-slate-400 rounded">7D</button>
+                </div>
+              </div>
+              <div class="h-40 flex items-end gap-1 px-2">
+                <div class="flex-1 bg-chevron-blue/10 h-[40%] rounded-t"></div>
+                <div class="flex-1 bg-chevron-blue/10 h-[35%] rounded-t"></div>
+                <div class="flex-1 bg-chevron-blue/10 h-[45%] rounded-t"></div>
+                <div class="flex-1 bg-chevron-blue/10 h-[50%] rounded-t"></div>
+                <div class="flex-1 bg-chevron-blue/10 h-[60%] rounded-t"></div>
+                <div class="flex-1 bg-chevron-red/40 h-[80%] rounded-t"></div>
+                <div class="flex-1 bg-chevron-red/60 h-[95%] rounded-t"></div>
+                <div class="flex-1 bg-chevron-red h-full rounded-t"></div>
+                <div class="flex-1 bg-chevron-red h-[90%] rounded-t"></div>
+              </div>
+            </div>
+            <!---------sensor-history-chart end------------->
+          </div>
+          <!---------operational-metrics end------------->
+
+          <!---------lifecycle-and-assets start---------->
+          <div class="space-y-6">
+            <h3 class="text-slate-400 text-xs font-black uppercase tracking-[0.2em] border-b border-slate-100 pb-2">Lifecycle &amp; Assets</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="metric-card bg-chevron-blue/[0.03] primary-border">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="material-symbols-outlined text-chevron-blue">build</span>
+                  <div class="h-2 w-2 rounded-full bg-chevron-blue animate-pulse"></div>
+                </div>
+                <div class="text-chevron-blue text-xs font-black uppercase mb-1">Maintenance</div>
+                <div class="text-3xl font-black text-chevron-blue">ACTIVE</div>
+                <p class="text-chevron-blue/60 text-[10px] mt-2 font-bold">Work order assigned</p>
+              </div>
+              <div class="metric-card">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="material-symbols-outlined text-slate-400">rotate_right</span>
+                </div>
+                <div class="text-slate-400 text-xs font-bold uppercase mb-1">Rotation</div>
+                <div class="text-3xl font-black text-slate-900">1,750</div>
+                <p class="text-slate-400 text-[10px] mt-2 font-bold">Target: 1,800 RPM</p>
+              </div>
+              <div class="metric-card">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="material-symbols-outlined text-slate-400">schedule</span>
+                </div>
+                <div class="text-slate-400 text-xs font-bold uppercase mb-1">Op. Hours</div>
+                <div class="text-3xl font-black text-slate-900">12,450h</div>
+                <p class="text-slate-400 text-[10px] mt-2 font-bold uppercase tracking-tight">Next service: 15,000h</p>
+              </div>
+              <div class="metric-card">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="material-symbols-outlined text-slate-400">sensors</span>
+                </div>
+                <div class="text-slate-400 text-xs font-bold uppercase mb-1">Connectivity</div>
+                <div class="text-xl font-black text-slate-900">98ms Latency</div>
+                <p class="text-emerald-600 text-[10px] mt-2 font-black uppercase">Signal Strength: Optimal</p>
+              </div>
+            </div>
+            <!---------critical-narrative start---------->
+            <div class="bg-chevron-red/[0.03] border border-chevron-red/10 rounded-lg p-6">
+              <h4 class="text-chevron-red font-black text-sm uppercase mb-4 tracking-wider">Critical Narrative</h4>
+              <div class="space-y-4">
+                <div class="flex gap-4">
+                  <div class="h-1.5 w-1.5 rounded-full bg-chevron-red mt-1.5"></div>
+                  <p class="text-slate-600 text-sm leading-relaxed">Bearing temperature exceeded safety threshold at 04:32 PM.</p>
+                </div>
+                <div class="flex gap-4">
+                  <div class="h-1.5 w-1.5 rounded-full bg-chevron-red mt-1.5"></div>
+                  <p class="text-slate-600 text-sm leading-relaxed">Autonomous shut-down sequence avoided catastrophic component failure.</p>
+                </div>
+                <div class="flex gap-4">
+                  <div class="h-1.5 w-1.5 rounded-full bg-chevron-blue mt-1.5"></div>
+                  <p class="text-slate-600 text-sm leading-relaxed">Technician dispatched. Estimated resolution time: 4 hours.</p>
+                </div>
+              </div>
+            </div>
+            <!---------critical-narrative end------------->
+          </div>
+          <!---------lifecycle-and-assets end------------->
+
+        </div>
+      </main>
+
+      <!---------footer start---------->
+      <footer class="border-t border-slate-100 py-6 px-6 text-center">
+        <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">Streamlined Operational Intelligence</p>
+      </footer>
+      <!---------footer end------------->
+
+    </div>
+  </body>
+</html>
