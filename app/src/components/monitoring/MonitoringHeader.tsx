@@ -12,20 +12,21 @@ export default function MonitoringHeader() {
     
     try {
       e.preventDefault();
-      const report: string = await getPumpReport();
+      // const report: string = await getPumpReport();
 
-      const blob = new Blob([report], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
+      // const blob = new Blob([report], { type: "text/plain" });
+      // const url = URL.createObjectURL(blob);
 
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "Report.txt";
+      // const link = document.createElement("a");
+      // link.href = url;
+      // link.download = "Report.txt";
 
-      document.body.appendChild(link);
-      link.click();
+      // document.body.appendChild(link);
+      // link.click();
 
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      // document.body.removeChild(link);
+      // URL.revokeObjectURL(url);
+      window.print();
     } catch (error) {
       console.error("[ERROR] ", error);
     }
